@@ -1,0 +1,5 @@
+product,calls,real_seconds,billed_seconds,difference_seconds,billed_over_real,rule_mismatches
+recording,300,66993,76080,9087,1.1356,1
+voice_inbound,200,57408,57996,588,1.0102,2
+voice_intl,80,11079,11604,525,1.0474,0
+voice_outbound,600,103139,117480,14341,1.1390,0
