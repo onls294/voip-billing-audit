@@ -4,6 +4,14 @@ How to audit a voice provider's bill: separate the seconds a call really lasted 
 seconds the provider billed, per product, and check that every call was billed by its
 declared rounding rule. Standard-library Python only.
 
+## My role
+
+I did this work with Claude Code as my coding agent. My part: I audited a real account's real
+vs. billed seconds per product, and found and corrected the project's own baseline, whose
+denominator counted the wrong call legs. I defined the method in this README, the rounding
+rules and the test cases, and reviewed the results. Claude Code wrote the code to that
+specification. The code here is a generic rewrite on synthetic data.
+
 > **Every data file in this repo is synthetic.** `generate_synthetic.py` invents every product,
 > duration and id with a fixed seed. No real account, amount or call is included. The only real
 > figure is the voicemail hang-up rate quoted in "Two lessons", as it was measured.
@@ -67,17 +75,17 @@ with `--products` is reported even when it had no calls, so a silent product is 
 ## Two lessons from doing this on a real account
 
 **A baseline can be wrong in its denominator, not in its indicator.** The project's own
-baseline for "minutes per conversation" counted the agent's legs as conversations instead of
-the lead's. The denominator was inflated, so the indicator looked far lower
-than it was. With that denominator, switching a feature off would have lowered the
-"conversations" count without losing a single real conversation. The fix was step 1 above:
+baseline for "minutes per conversation" counted the wrong call legs as conversations. The
+denominator was inflated, so the indicator looked lower than it was. With that denominator,
+switching a feature off would have lowered the "conversations" count without losing a single
+real conversation. The fix was step 1 above:
 define the event first, then count.
 
 **Watch the rate, not the count.** Voicemail hang-ups went from **3.50 to 3.06 per 100 calls**
 between the fortnight before and the fortnight after a change in voicemail detection on
-7 September 2026 (fortnights aligned to 21 September, measured 24 September). The raw count fell
-much more, because call volume also fell in the same fortnight. A threshold written as an
-absolute number would have fired on a volume change, not on a failure. So write alarm
+7 September 2026: [2026-08-24, 2026-09-07) and [2026-09-07, 2026-09-21), measured on
+24 September 2026. The raw count also fell, partly because call volume fell. A threshold
+written as an absolute number would have fired on a volume change, not on a failure. So write alarm
 thresholds per 100 calls, with the exact window they were measured on.
 
 ## Files
